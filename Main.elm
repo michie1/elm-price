@@ -51,6 +51,7 @@ type Msg
     | OnClick Int
     | Focus Bool
     | Clear
+    | Backspace
 
 
 limitPrice : Int -> Int
@@ -130,6 +131,9 @@ update msg model =
         Clear ->
             ( { model | price = 0 }, Cmd.none )
 
+        Backspace ->
+            ( { model | price = model.price // 10 }, Cmd.none )
+
 
 myLocale : FormatNumber.Locales.Locale
 myLocale =
@@ -170,6 +174,7 @@ view model =
                 , div []
                     [ button [ Html.Events.onClick (OnClick 0) ] [ text "0" ]
                     , button [ Html.Events.onClick Clear ] [ text "C" ]
+                    , button [ Html.Events.onClick Backspace ] [ text "backspace" ]
                     ]
                 ]
             ]

@@ -10225,12 +10225,20 @@ var _user$project$Main$update = F2(
 						{focus: _p0._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'Clear':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{price: 0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{price: (model.price / 10) | 0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -10241,6 +10249,7 @@ var _user$project$Main$Model = F3(
 	function (a, b, c) {
 		return {price: a, keyboardState: b, focus: c};
 	});
+var _user$project$Main$Backspace = {ctor: 'Backspace'};
 var _user$project$Main$Clear = {ctor: 'Clear'};
 var _user$project$Main$Focus = function (a) {
 	return {ctor: 'Focus', _0: a};
@@ -10479,7 +10488,22 @@ var _user$project$Main$view = function (model) {
 														_0: _elm_lang$html$Html$text('C'),
 														_1: {ctor: '[]'}
 													}),
-												_1: {ctor: '[]'}
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$button,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Backspace),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('backspace'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
 											}
 										}),
 									_1: {ctor: '[]'}
