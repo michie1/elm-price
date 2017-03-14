@@ -10143,7 +10143,7 @@ var _ohanhi$keyboard_extra$Keyboard_Extra$targetKey = A2(
 
 var _user$project$Main$myLocale = {decimals: 2, thousandSeparator: '.', decimalSeparator: ','};
 var _user$project$Main$limitPrice = function (price) {
-	return A2(_elm_lang$core$Basics$min, price, 10000000000);
+	return A2(_elm_lang$core$Basics$min, price, 100000000000);
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {

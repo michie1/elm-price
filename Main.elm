@@ -56,7 +56,7 @@ type Msg
 
 limitPrice : Int -> Int
 limitPrice price =
-    Basics.min price 10000000000
+    Basics.min price 100000000000
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
