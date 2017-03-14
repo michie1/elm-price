@@ -138,8 +138,8 @@ update msg model =
 myLocale : FormatNumber.Locales.Locale
 myLocale =
     { decimals = 2
-    , thousandSeparator = ","
-    , decimalSeparator = "."
+    , thousandSeparator = "."
+    , decimalSeparator = ","
     }
 
 

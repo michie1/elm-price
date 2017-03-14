@@ -10141,7 +10141,7 @@ var _ohanhi$keyboard_extra$Keyboard_Extra$targetKey = A2(
 	_ohanhi$keyboard_extra$Keyboard_Extra$fromCode,
 	A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int));
 
-var _user$project$Main$myLocale = {decimals: 2, thousandSeparator: ',', decimalSeparator: '.'};
+var _user$project$Main$myLocale = {decimals: 2, thousandSeparator: '.', decimalSeparator: ','};
 var _user$project$Main$limitPrice = function (price) {
 	return A2(_elm_lang$core$Basics$min, price, 10000000000);
 };
