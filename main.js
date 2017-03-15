@@ -10200,7 +10200,8 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								price: _user$project$Main$limitPrice(price)
+								price: _user$project$Main$limitPrice(price),
+								focus: true
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -10233,7 +10234,7 @@ var _user$project$Main$update = F2(
 						{price: 0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'Backspace':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10241,14 +10242,47 @@ var _user$project$Main$update = F2(
 						{price: (model.price / 10) | 0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'Hunderd':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							price: _user$project$Main$limitPrice(model.price * 100)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Blur':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'OnFocus':
+				var _p3 = A2(_elm_lang$core$Debug$log, 'onFocus', 'onFocus');
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{focus: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var _p4 = A2(_elm_lang$core$Debug$log, 'OnBlur', 'OnBlur');
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{focus: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
 var _user$project$Main$model = {price: 10000, keyboardState: _ohanhi$keyboard_extra$Keyboard_Extra$initialState, focus: false};
-var _user$project$Main$focus = _elm_lang$core$Native_Platform.incomingPort('focus', _elm_lang$core$Json_Decode$bool);
 var _user$project$Main$Model = F3(
 	function (a, b, c) {
 		return {price: a, keyboardState: b, focus: c};
 	});
+var _user$project$Main$OnBlur = {ctor: 'OnBlur'};
+var _user$project$Main$OnFocus = {ctor: 'OnFocus'};
+var _user$project$Main$Blur = {ctor: 'Blur'};
+var _user$project$Main$Hunderd = {ctor: 'Hunderd'};
 var _user$project$Main$Backspace = {ctor: 'Backspace'};
 var _user$project$Main$Clear = {ctor: 'Clear'};
 var _user$project$Main$Focus = function (a) {
@@ -10256,6 +10290,26 @@ var _user$project$Main$Focus = function (a) {
 };
 var _user$project$Main$OnClick = function (a) {
 	return {ctor: 'OnClick', _0: a};
+};
+var _user$project$Main$numpadButton = function (value) {
+	return A2(
+		_elm_lang$html$Html$button,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(
+				_user$project$Main$OnClick(value)),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onFocus(_user$project$Main$OnFocus),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(value)),
+			_1: {ctor: '[]'}
+		});
 };
 var _user$project$Main$view = function (model) {
 	var focusClass = model.focus ? 'focus' : 'no-focus';
@@ -10267,25 +10321,78 @@ var _user$project$Main$view = function (model) {
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$html$Html_Attributes$class(focusClass),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$tabindex(0),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onFocus(_user$project$Main$OnFocus),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onBlur(_user$project$Main$OnBlur),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
 			}
 		},
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$span,
-				{ctor: '[]'},
+				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'€',
-							A2(
-								_cuducos$elm_format_number$FormatNumber$format,
-								_user$project$Main$myLocale,
-								_elm_lang$core$Basics$toFloat(model.price) / 100))),
+					_0: _elm_lang$html$Html_Attributes$class('top'),
 					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('amount'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'€',
+									A2(
+										_cuducos$elm_format_number$FormatNumber$format,
+										_user$project$Main$myLocale,
+										_elm_lang$core$Basics$toFloat(model.price) / 100))),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('c'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Clear),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('C'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}),
 			_1: {
 				ctor: '::',
@@ -10295,107 +10402,45 @@ var _user$project$Main$view = function (model) {
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
+							_elm_lang$html$Html$input,
 							{
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$button,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(
-											_user$project$Main$OnClick(7)),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('7'),
-										_1: {ctor: '[]'}
-									}),
+								_0: _elm_lang$html$Html_Attributes$value(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'€',
+										A2(
+											_cuducos$elm_format_number$FormatNumber$format,
+											_user$project$Main$myLocale,
+											_elm_lang$core$Basics$toFloat(model.price) / 100))),
 								_1: {
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$button,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Main$OnClick(8)),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('8'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$button,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(
-													_user$project$Main$OnClick(9)),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('9'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}
+									_0: _elm_lang$html$Html_Events$onFocus(_user$project$Main$OnFocus),
+									_1: {ctor: '[]'}
 								}
-							}),
-						_1: {
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html$div,
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$button,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Main$OnClick(4)),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('4'),
-											_1: {ctor: '[]'}
-										}),
+									_0: _user$project$Main$numpadButton(7),
 									_1: {
 										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$button,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(
-													_user$project$Main$OnClick(5)),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('5'),
-												_1: {ctor: '[]'}
-											}),
+										_0: _user$project$Main$numpadButton(8),
 										_1: {
 											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$button,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(
-														_user$project$Main$OnClick(6)),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('6'),
-													_1: {ctor: '[]'}
-												}),
+											_0: _user$project$Main$numpadButton(9),
 											_1: {ctor: '[]'}
 										}
 									}
@@ -10407,49 +10452,13 @@ var _user$project$Main$view = function (model) {
 									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$button,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(
-													_user$project$Main$OnClick(1)),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('1'),
-												_1: {ctor: '[]'}
-											}),
+										_0: _user$project$Main$numpadButton(4),
 										_1: {
 											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$button,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(
-														_user$project$Main$OnClick(2)),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('2'),
-													_1: {ctor: '[]'}
-												}),
+											_0: _user$project$Main$numpadButton(5),
 											_1: {
 												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$button,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onClick(
-															_user$project$Main$OnClick(3)),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('3'),
-														_1: {ctor: '[]'}
-													}),
+												_0: _user$project$Main$numpadButton(6),
 												_1: {ctor: '[]'}
 											}
 										}
@@ -10461,31 +10470,39 @@ var _user$project$Main$view = function (model) {
 										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$button,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(
-														_user$project$Main$OnClick(0)),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('0'),
-													_1: {ctor: '[]'}
-												}),
+											_0: _user$project$Main$numpadButton(1),
 											_1: {
+												ctor: '::',
+												_0: _user$project$Main$numpadButton(2),
+												_1: {
+													ctor: '::',
+													_0: _user$project$Main$numpadButton(3),
+													_1: {ctor: '[]'}
+												}
+											}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{ctor: '[]'},
+											{
 												ctor: '::',
 												_0: A2(
 													_elm_lang$html$Html$button,
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Clear),
-														_1: {ctor: '[]'}
+														_0: _elm_lang$html$Html_Events$onClick(
+															_user$project$Main$OnClick(0)),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onFocus(_user$project$Main$OnFocus),
+															_1: {ctor: '[]'}
+														}
 													},
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html$text('C'),
+														_0: _elm_lang$html$Html$text('0'),
 														_1: {ctor: '[]'}
 													}),
 												_1: {
@@ -10494,24 +10511,47 @@ var _user$project$Main$view = function (model) {
 														_elm_lang$html$Html$button,
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Backspace),
-															_1: {ctor: '[]'}
+															_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Hunderd),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onFocus(_user$project$Main$OnFocus),
+																_1: {ctor: '[]'}
+															}
 														},
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html$text('backspace'),
+															_0: _elm_lang$html$Html$text('00'),
 															_1: {ctor: '[]'}
 														}),
-													_1: {ctor: '[]'}
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$button,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Backspace),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onFocus(_user$project$Main$OnFocus),
+																	_1: {ctor: '[]'}
+																}
+															},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text('backspace'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
 												}
-											}
-										}),
-									_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
-						}
-					}),
-				_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
@@ -10529,11 +10569,7 @@ var _user$project$Main$subscriptions = function (model) {
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$Main$KeyUp),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Main$focus(_user$project$Main$Focus),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			}
 		});
 };

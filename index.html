@@ -5,7 +5,7 @@
     <style>
       #container {
         width: 400px;
-        height: 400px;
+        height: 500px;
         border: 1px solid blue;
       }
 
@@ -15,8 +15,8 @@
 
       #price, #price #inner {
         display: block;
-        width: 200px;
-        height: 200px;
+        width: 300px;
+        height: 400px;
       }
 
       #price .focus {
@@ -26,31 +26,48 @@
       #price .no-focus {
         border: 1px solid red;
       } 
+
+      .top {
+        display: block;
+        height: 75px;
+      }
+
+      .amount {
+        display: block;
+        float: left;
+        border: 1px solid grey;
+        margin: 10px;
+        padding: 10px;
+        width: 140px;
+        height: 30px;
+        font-size: 18px;
+      }
+
+      .c {
+        display: block;
+        float: left;
+        width: 50px;
+      }
+
+      .c button {
+        height: 50px;
+      }
+
+      button {
+        margin: 10px;
+        width: 70px;
+        height: 30px;
+        line-height: 30px;
+      }
     </style>
   </head>
   <body>
     <div id="container">
-      <div id="price" tabindex="0"></div>
+      <div id="price"></div>
     </div>
     <script src="main.js"></script>
     <script>
       var elm = Elm.Main.embed(document.getElementById('price'));
-      /*
-      document.getElementById('container').addEventListener('click', function () {
-        elm.ports.focus.send(false);
-      });
-      */
-      document.getElementById('price').addEventListener('blur', function () {
-        elm.ports.focus.send(false);
-      });
-      document.getElementById('price').addEventListener('focus', function (event) {
-        event.stopPropagation();
-        elm.ports.focus.send(true);
-      });
-      document.getElementById('price').addEventListener('click', function (event) {
-        event.stopPropagation();
-        elm.ports.focus.send(true);
-      });
     </script>
   </body>
 </html>

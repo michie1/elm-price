@@ -1,4 +1,4 @@
-port module Main exposing (..)
+module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -7,7 +7,6 @@ import FormatNumber.Locales
 import Keyboard
 import Keyboard.Extra
 import Html.Events
-
 
 type alias Model =
     { price : Int
@@ -39,7 +38,6 @@ subscriptions model =
     Sub.batch
         [ Sub.map KeyboardExtraMsg Keyboard.Extra.subscriptions
         , Keyboard.ups KeyUp
-        , focus Focus
         ]
 
 
@@ -52,6 +50,10 @@ type Msg
     | Focus Bool
     | Clear
     | Backspace
+    | Hunderd
+    | Blur
+    | OnFocus
+    | OnBlur
 
 
 limitPrice : Int -> Int
@@ -118,7 +120,7 @@ update msg model =
                                     Just value ->
                                         model.price * 10 + value
                 in
-                    ( { model | price = limitPrice price }, Cmd.none )
+                    ( { model | price = limitPrice price, focus = True }, Cmd.none )
             else
                 ( model, Cmd.none )
 
@@ -133,6 +135,24 @@ update msg model =
 
         Backspace ->
             ( { model | price = model.price // 10 }, Cmd.none )
+
+        Hunderd ->
+            ( { model | price = limitPrice (model.price * 100) }, Cmd.none )
+
+        Blur -> 
+            ( model, Cmd.none )
+
+        OnFocus -> 
+            let
+                _ = Debug.log "onFocus" "onFocus"
+            in
+                ( { model | focus = True }, Cmd.none )
+
+        OnBlur -> 
+            let
+                _ = Debug.log "OnBlur" "OnBlur"
+            in
+                ( { model | focus = False }, Cmd.none )
 
 
 myLocale : FormatNumber.Locales.Locale
@@ -152,32 +172,72 @@ view model =
             else
                 "no-focus"
     in
-        div [ Html.Attributes.id "inner", class focusClass ]
-            [ span [] [ text <| "€" ++ (FormatNumber.format myLocale <| (toFloat model.price) / 100) ]
-            --, div [] [ input [ Html.Attributes.value <| "€" ++ (FormatNumber.format myLocale <| (toFloat model.price) / 100) ] [] ]
+        div [ Html.Attributes.id "inner"
+            , class focusClass
+            , Html.Attributes.tabindex 0
+            , Html.Events.onFocus OnFocus 
+            , Html.Events.onBlur OnBlur
+            ]
+            [ div [ class "top" ] 
+                [ div 
+                    [ class "amount" ] 
+                    [ text <| "€" ++ (FormatNumber.format myLocale <| (toFloat model.price) / 100) ] 
+                , div 
+                    [ class "c" ] 
+                    [ button 
+                        [ Html.Events.onClick Clear ] 
+                        [ text "C" ]
+                    ]
+                ] 
+                
+            , div [] 
+                [ input 
+                    [ Html.Attributes.value <| "€" ++ (FormatNumber.format myLocale <| (toFloat model.price) / 100)
+                    , Html.Events.onFocus OnFocus 
+                    ]
+                    []
+                ]
             , div []
                 [ div []
-                    [ button [ Html.Events.onClick (OnClick 7) ] [ text "7" ]
-                    , button [ Html.Events.onClick (OnClick 8) ] [ text "8" ]
-                    , button [ Html.Events.onClick (OnClick 9) ] [ text "9" ]
+                    [ numpadButton 7
+                    , numpadButton 8 
+                    , numpadButton 9
                     ]
                 , div []
-                    [ button [ Html.Events.onClick (OnClick 4) ] [ text "4" ]
-                    , button [ Html.Events.onClick (OnClick 5) ] [ text "5" ]
-                    , button [ Html.Events.onClick (OnClick 6) ] [ text "6" ]
+                    [ numpadButton 4
+                    , numpadButton 5 
+                    , numpadButton 6
                     ]
                 , div []
-                    [ button [ Html.Events.onClick (OnClick 1) ] [ text "1" ]
-                    , button [ Html.Events.onClick (OnClick 2) ] [ text "2" ]
-                    , button [ Html.Events.onClick (OnClick 3) ] [ text "3" ]
+                    [ numpadButton 1
+                    , numpadButton 2 
+                    , numpadButton 3
                     ]
                 , div []
-                    [ button [ Html.Events.onClick (OnClick 0) ] [ text "0" ]
-                    , button [ Html.Events.onClick Clear ] [ text "C" ]
-                    , button [ Html.Events.onClick Backspace ] [ text "backspace" ]
+                    [ button 
+                        [ Html.Events.onClick (OnClick 0) 
+                        , Html.Events.onFocus OnFocus 
+                        ] 
+                        [ text "0" ]
+                    , button 
+                        [ Html.Events.onClick Hunderd 
+                        , Html.Events.onFocus OnFocus 
+                        ] 
+                        [ text "00" ]
+                    , button 
+                        [ Html.Events.onClick Backspace 
+                        , Html.Events.onFocus OnFocus 
+                        ]
+                        [ text "backspace" ]
                     ]
                 ]
             ]
 
+numpadButton : Int -> Html Msg
+numpadButton value =
+    button 
+        [ Html.Events.onClick (OnClick value)
+        , Html.Events.onFocus OnFocus 
+        ]
+        [ text <| toString value ]
 
-port focus : (Bool -> msg) -> Sub msg
