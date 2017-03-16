@@ -7,6 +7,8 @@ import FormatNumber.Locales
 import Keyboard
 import Keyboard.Extra
 import Html.Events
+import Json.Decode as Json
+
 
 type alias Model =
     { price : Int
@@ -54,6 +56,7 @@ type Msg
     | Blur
     | OnFocus
     | OnBlur
+    | OnInput
 
 
 limitPrice : Int -> Int
@@ -139,20 +142,25 @@ update msg model =
         Hunderd ->
             ( { model | price = limitPrice (model.price * 100) }, Cmd.none )
 
-        Blur -> 
+        Blur ->
             ( model, Cmd.none )
 
-        OnFocus -> 
+        OnFocus ->
             let
-                _ = Debug.log "onFocus" "onFocus"
+                _ =
+                    Debug.log "onFocus" "onFocus"
             in
                 ( { model | focus = True }, Cmd.none )
 
-        OnBlur -> 
+        OnBlur ->
             let
-                _ = Debug.log "OnBlur" "OnBlur"
+                _ =
+                    Debug.log "OnBlur" "OnBlur"
             in
                 ( { model | focus = False }, Cmd.none )
+
+        OnInput ->
+            ( model, Cmd.none )
 
 
 myLocale : FormatNumber.Locales.Locale
@@ -172,72 +180,92 @@ view model =
             else
                 "no-focus"
     in
-        div [ Html.Attributes.id "inner"
+        div
+            [ Html.Attributes.id "inner"
             , class focusClass
             , Html.Attributes.tabindex 0
-            , Html.Events.onFocus OnFocus 
+            , Html.Events.onFocus OnFocus
             , Html.Events.onBlur OnBlur
             ]
-            [ div [ class "top" ] 
+            [ div [ class "top" ]
                 [ div 
-                    [ class "amount" ] 
-                    [ text <| "€" ++ (FormatNumber.format myLocale <| (toFloat model.price) / 100) ] 
-                , div 
-                    [ class "c" ] 
-                    [ button 
-                        [ Html.Events.onClick Clear ] 
+                    []
+                    [ input
+                        [ Html.Attributes.value <| "€" ++ (FormatNumber.format myLocale <| (toFloat model.price) / 100)
+                        , Html.Events.onFocus OnFocus
+                        , onEnter OnInput
+                        ]
+                        []
+                    ]
+                    -- [ class "amount" ]
+                    -- [ text <| "€" ++ (FormatNumber.format myLocale <| (toFloat model.price) / 100) ]
+                , div
+                    [ class "c" ]
+                    [ button
+                        [ Html.Events.onClick Clear ]
                         [ text "C" ]
                     ]
-                ] 
-                
-            , div [] 
-                [ input 
-                    [ Html.Attributes.value <| "€" ++ (FormatNumber.format myLocale <| (toFloat model.price) / 100)
-                    , Html.Events.onFocus OnFocus 
-                    ]
-                    []
                 ]
             , div []
                 [ div []
                     [ numpadButton 7
-                    , numpadButton 8 
+                    , numpadButton 8
                     , numpadButton 9
                     ]
                 , div []
                     [ numpadButton 4
-                    , numpadButton 5 
+                    , numpadButton 5
                     , numpadButton 6
                     ]
                 , div []
                     [ numpadButton 1
-                    , numpadButton 2 
+                    , numpadButton 2
                     , numpadButton 3
                     ]
                 , div []
-                    [ button 
-                        [ Html.Events.onClick (OnClick 0) 
-                        , Html.Events.onFocus OnFocus 
-                        ] 
+                    [ button
+                        [ Html.Events.onClick (OnClick 0)
+                        , Html.Events.onFocus OnFocus
+                        ]
                         [ text "0" ]
-                    , button 
-                        [ Html.Events.onClick Hunderd 
-                        , Html.Events.onFocus OnFocus 
-                        ] 
+                    , button
+                        [ Html.Events.onClick Hunderd
+                        , Html.Events.onFocus OnFocus
+                        ]
                         [ text "00" ]
-                    , button 
-                        [ Html.Events.onClick Backspace 
-                        , Html.Events.onFocus OnFocus 
+                    , button
+                        [ Html.Events.onClick Backspace
+                        , Html.Events.onFocus OnFocus
                         ]
                         [ text "backspace" ]
                     ]
                 ]
             ]
 
+
 numpadButton : Int -> Html Msg
 numpadButton value =
-    button 
+    button
         [ Html.Events.onClick (OnClick value)
-        , Html.Events.onFocus OnFocus 
+        , Html.Events.onFocus OnFocus
         ]
         [ text <| toString value ]
 
+
+onEnter : msg -> Attribute msg
+onEnter msg =
+    let
+        defaultOptions =
+            Html.Events.defaultOptions
+
+        options =
+            { defaultOptions | preventDefault = True }
+
+        filterKey code =
+            Json.succeed msg
+
+        decoder =
+            Html.Events.keyCode
+                |> Json.andThen (Debug.log "filterKey" filterKey)
+    in
+        Html.Events.onWithOptions "keydown" options decoder
